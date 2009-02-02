@@ -1,16 +1,14 @@
 require 'rubygems'
 require 'sinatra'
 
-helpers do
-  
-  def file_list(path)
-    files = Dir["#{path}/**"]
-  end
-  
+SHARE_PATH = File.join(File.dirname(__FILE__), 'share')
+
+def file_list(path)
+  files = Dir["#{path}/**"]
 end
 
-
 get '/' do
+  @my_files = file_list(SHARE_PATH)
   haml :home
 end
 
@@ -40,5 +38,14 @@ __END__
       = yield 
 
 @@ home
-%p 
-  Oh hai
+%table
+  %thead
+    %tr
+      %th{ :class => 'left' } File name
+      %th{ :class => 'right'} Size
+  %tfoot
+  %tbody
+    - @my_files.each do |file|
+      %tr
+        %td.left= file
+        %td.right= File.size file

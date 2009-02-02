@@ -5,6 +5,10 @@ body        { font-size: 76% }
 
 #wrap   { width: 500px; margin: 0 auto; margin-top: 50px }
 
-#header         { text-align: center }
+#header         { text-align: center; margin-bottom: 20px }
 #header .arrow  { font-size: 7em; font-weight: bold }
 #header .puller { font-size: 4em }
+
+table         { width: 350px }
+table .left   { text-align: left }
+table .right  { text-align: right }
