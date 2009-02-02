@@ -2,3 +2,9 @@
 html        { font-family: "Helvetica Neue", "Arial", sans-serif }
 body        { font-size: 76% }
 #container  { font-size: 1.1em }
+
+#wrap   { width: 500px; margin: 0 auto; margin-top: 50px }
+
+#header         { text-align: center }
+#header .arrow  { font-size: 7em; font-weight: bold }
+#header .puller { font-size: 4em }

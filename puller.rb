@@ -1,6 +1,15 @@
 require 'rubygems'
 require 'sinatra'
 
+helpers do
+  
+  def file_list(path)
+    files = Dir["#{path}/**"]
+  end
+  
+end
+
+
 get '/' do
   haml :home
 end
@@ -20,8 +29,15 @@ __END__
     %title "puller <-"
     %meta{ 'http-equiv' => 'Content-type', :content => 'text/html; charset=utf-8' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/screen.css' }
+    %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/theme_default.css' }
   %body
-    = yield 
+    #wrap
+      #header
+        %span.puller
+          puller
+        %span.arrow
+          <-
+      = yield 
 
 @@ home
 %p 
