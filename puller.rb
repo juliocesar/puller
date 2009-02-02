@@ -2,19 +2,21 @@ require 'rubygems'
 require 'sinatra'
 
 SHARE_PATH = File.join(File.dirname(__FILE__), 'share')
+MY_FILES = Dir["#{SHARE_PATH}/**"].map { |f| File.basename f }
 
-def file_list(path)
-  files = Dir["#{path}/**"]
+# get '/files/:filename' do
+#   "omg #{params[:filename]}"
+#   # if @my_files.include? params[:filename]
+#   #   send_data params[:filename]
+#   # end
+# end
+
+get '/files/*' do
+  send_file File.join(SHARE_PATH, params["splat"])
 end
 
 get '/' do
-  @my_files = file_list(SHARE_PATH)
   haml :home
-end
-
-get '/screen.css' do
-  content_type 'text/css', :charset => 'utf-8'
-  erb :style
 end
 
 __END__
@@ -45,7 +47,8 @@ __END__
       %th{ :class => 'right'} Size
   %tfoot
   %tbody
-    - @my_files.each do |file|
+    - MY_FILES.each do |file|
       %tr
-        %td.left= file
-        %td.right= File.size file
+        %td.left
+          %a{ :href => "/files/#{file}", :alt => "#{file}" }= file
+        %td.right= File.size File.join(SHARE_PATH, file)
