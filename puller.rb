@@ -1,7 +1,15 @@
+# This is not necessary is it?
+SINATRA_ROOT = File.dirname(__FILE__)
+$:.concat Dir["#{SINATRA_ROOT}/vendor/*/lib"]
+
 require 'rubygems'
 require 'sinatra'
 require 'json'
 require 'net/http'
+require 'net/dns/mdns-sd'
+require 'net/dns/resolv-mdns'
+require 'net/dns/resolv-replace'
+require 'terminator'
 
 # Mixins
 class Fixnum
@@ -19,15 +27,6 @@ class String
     File.join(self, str)
   end
 end
-
-# This is not necessary is it?
-SINATRA_ROOT = File.dirname(__FILE__)
-
-$:.unshift SINATRA_ROOT/'vendor'
-require 'net-mdns-0.4/lib/net/dns/mdns-sd'
-require 'net-mdns-0.4/lib/net/dns/resolv-mdns'
-require 'net-mdns-0.4/lib/net/dns/resolv-replace'
-require 'terminator-0.4.4/lib/terminator'
 
 module Puller
   
@@ -140,7 +139,7 @@ get '/files' do
 end
 
 post '/files' do
-  
+  # files sent from others
 end
 
 get '/hosts' do
@@ -164,6 +163,8 @@ __END__
     %meta{ 'http-equiv' => 'Content-type', :content => 'text/html; charset=utf-8' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/screen.css' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/theme_default.css' }
+    %script{ :type => 'text/javascript', :src => '/jquery-1.3.1.min.js' }
+    %script{ :type => 'text/javascript', :src => '/app.js' }
   %body
     #header
       %span.puller puller
@@ -173,15 +174,15 @@ __END__
 
 @@ home
 %h3 My files
-%table
+%table{ :id => 'my_files' }
   %thead
     %tr
-      %th{ :class => 'left' } File name
-      %th{ :class => 'right'} Size
+      %th.name File name
+      %th.size Size
   %tfoot  
   %tbody
     - @files.each do |file|
       %tr
-        %td.left
+        %td.name
           %a{ :href => "/files/#{file}", :alt => "#{file}" }= file
-        %td.right= "%0.2f" % File.size(SHARE_PATH/file).to_megabytes + "M"
+        %td.size= "%0.2f" % File.size(SHARE_PATH/file).to_megabytes + "M"

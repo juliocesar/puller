@@ -1,3 +1,7 @@
 table { border-collapse: collapse }
 th    { padding: 8px; color: #fff; background-color: #000 }  
 td    { padding: 8px }
+
+/* roundie roundie */
+th.name { -moz-border-radius-topleft: 5px; -webkit-border-top-left-radius: 5px }
+th.size { -moz-border-radius-topright: 5px; -webkit-border-top-right-radius: 5px }
