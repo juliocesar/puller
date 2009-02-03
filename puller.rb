@@ -165,6 +165,9 @@ __END__
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/screen.css' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/theme_default.css' }
   %body
+    #header
+      %span.puller puller
+      %span.arrow <-
     #wrap
       = yield 
 
