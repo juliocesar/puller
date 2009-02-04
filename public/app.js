@@ -10,7 +10,6 @@ $(document).ready(function() {
               '<th class="size">Size</th>',
             '</tr>',
           '</thead>',
-          '<tfoot />',
           '<tbody />',
         '</table>'
       ].join('')).appendTo('#wrap');

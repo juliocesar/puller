@@ -166,9 +166,9 @@ __END__
 @@ layout
 !!! XML
 !!! STRICT
-%html
+%html{ 'xml:lang' => 'en', :lang => 'en', :xmlns => 'http://www.w3.org/1999/xhtml' }
   %head
-    %title "puller <-"
+    %title "puller &lt;-"
     %meta{ 'http-equiv' => 'Content-type', :content => 'text/html; charset=utf-8' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/screen.css' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/theme_default.css' }
@@ -185,10 +185,9 @@ __END__
     %tr
       %th.name File name
       %th.size Size
-  %tfoot  
   %tbody
     - @files.each do |file|
       %tr
         %td.name
-          %a{ :href => "/files/#{file}", :alt => "#{file}" }= file
+          %a{ :href => "/files/#{file}" }= file
         %td.size= "%0.2f" % File.size(SHARE_PATH/file).to_megabytes + "M"
