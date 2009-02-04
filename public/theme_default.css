@@ -1,4 +1,5 @@
-table { border-collapse: collapse }
+html        { font-family: "Helvetica Neue", "Arial", sans-serif }
+
 th    { padding: 8px; color: #fff; background-color: #000 }  
 td    { padding: 8px }
 
