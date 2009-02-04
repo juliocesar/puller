@@ -204,7 +204,7 @@ __END__
       = yield 
 
 @@ home
-#my_files
+#my_files{ :class => 'host' }
   %h1= CONFIG.name
   %p= CONFIG.comment
   %table

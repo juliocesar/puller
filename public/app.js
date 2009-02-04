@@ -3,7 +3,7 @@ $(document).ready(function() {
     
     $(hosts).each(function(i, host) {
       var table = $([
-        '<div id="host-', host.name, '" style="display: none">',
+        '<div id="host-', host.name, '" style="display: none" class="host">',
           '<h1>', host.name, '</h1>',
           '<p>', host.comment, '</p>',
           '<table id="host-', host.name, '">',
