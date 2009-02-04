@@ -54,7 +54,7 @@ module Puller
         :port     => options[:port],
         :name     => options[:name],
         :comment  => options[:comment],
-        :files    => options[:files].map { |f| { :name => f, :size => "%0.2f" % File.size(SHARE_PATH/f).to_megabytes + "M" } }
+        :files    => options[:files].map { |f| { :name => f, :size => "%0.2f" % File.size(SHARED_PATH/f).to_megabytes + "M" } }
       }
       struct.send("to_#{format}")
     end
@@ -74,7 +74,35 @@ module Puller
     end
     
     def my_files
-      Dir["#{SHARE_PATH}/**"].map { |f| File.basename f }
+      Dir["#{SHARED_PATH}/**"].map { |f| File.basename f }
+    end
+  end
+  
+  class Config
+    class Invalid < StandardError; end
+    def initialize
+      config = YAML.load_file SINATRA_ROOT/'config.yml'
+      verify! config
+      config.keys.each do |key|
+        self.class.send(:attr_accessor, key)
+        self.send("#{key}=", config[key])
+      end
+    end
+    
+    private
+    def verify!(config)
+      # a small set of rules to keep the config sane
+      raise Invalid, "#{config['downloads_dir']} not a directory or is not readable" unless valid_dir?(config['downloads_dir'])
+      raise Invalid, "#{config['shared_dir']} is not a directory or is not readable" unless valid_dir?(config['shared_dir'])
+      raise Invalid, "#{config['name']} is not valid. Use only letters of numbers" unless valid_name?(config['name'])
+    end
+    
+    def valid_dir?(dir)
+      dir and File.directory?(SINATRA_ROOT/dir) and File.readable?(SINATRA_ROOT/dir)
+    end
+    
+    def valid_name?(name)
+      name and !!name[/^[a-zA-Z0-9]+$/]
     end
   end
   
@@ -88,8 +116,8 @@ module Puller
         '_http._tcp', 
         'local', 4567, 
         'files' => '/files', 
-        'name' => 'Nikola Tesla',
-        'comment' => 'omg awesome'
+        'name' => CONFIG.name,
+        'comment' => CONFIG.comment
       )
     end
     
@@ -119,20 +147,20 @@ module Puller
       end
       return hosts      
     end
-    
   end
-    
 end
 
-SHARE_PATH      = SINATRA_ROOT/'share'
-DOWNLOADS_PATH  = SINATRA_ROOT/'downloads'
+CONFIG = Puller::Config.new
+
+SHARED_PATH     = SINATRA_ROOT/CONFIG.shared_dir
+DOWNLOADS_PATH  = SINATRA_ROOT/CONFIG.downloads_dir
 
 before do
   @puller = Puller::Core.new
 end
 
 get '/files/*' do
-  send_file SHARE_PATH/params["splat"]
+  send_file SHARED_PATH/params["splat"]
   # ^ don't... just don't
 end
 
@@ -141,8 +169,8 @@ get '/files' do
   Puller::Response.new(
     :hostname => Socket.gethostname, 
     :port     => 4567, 
-    :name     => 'myhost',
-    :comment  => 'omg awesome', 
+    :name     => CONFIG.name,
+    :comment  => CONFIG.comment, 
     :files    => @puller.my_files
   )
 end
@@ -190,4 +218,4 @@ __END__
       %tr
         %td.name
           %a{ :href => "/files/#{file}" }= file
-        %td.size= "%0.2f" % File.size(SHARE_PATH/file).to_megabytes + "M"
+        %td.size= "%0.2f" % File.size(SHARED_PATH/file).to_megabytes + "M"
