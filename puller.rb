@@ -58,7 +58,9 @@ module Puller
         :port     => options[:port],
         :name     => options[:name],
         :comment  => options[:comment],
-        :files    => options[:files].map { |f| { :name => f, :size => "%0.2f" % File.size(SINATRA_ROOT/CONFIG.shared_dir/f).to_megabytes + "M" } }
+        :files    => options[:files].map { |f| 
+          { :name => f, :size => "%0.2f" % File.size(SINATRA_ROOT/CONFIG.shared_dir/f).to_megabytes + "M" } 
+        }
       }
       struct.send("to_#{format}")
     end
