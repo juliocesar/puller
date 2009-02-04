@@ -46,6 +46,10 @@ module Puller
     end
   end
   
+  class BitTorrent
+    # To do...
+  end
+  
   class Response
     # def self.new(host, port, comment, files, format)
     def self.new(options = {}, format = :json)
@@ -54,14 +58,10 @@ module Puller
         :port     => options[:port],
         :name     => options[:name],
         :comment  => options[:comment],
-        :files    => options[:files].map { |f| { :name => f, :size => "%0.2f" % File.size(SHARED_PATH/f).to_megabytes + "M" } }
+        :files    => options[:files].map { |f| { :name => f, :size => "%0.2f" % File.size(SINATRA_ROOT/CONFIG.shared_dir/f).to_megabytes + "M" } }
       }
       struct.send("to_#{format}")
     end
-  end
-  
-  class BitTorrent
-    # To do...
   end
   
   class Core
@@ -74,7 +74,7 @@ module Puller
     end
     
     def my_files
-      Dir["#{SHARED_PATH}/**"].map { |f| File.basename f }
+      Dir["#{SINATRA_ROOT/CONFIG.shared_dir}/**"].map { |f| File.basename f }
     end
   end
   
@@ -152,15 +152,12 @@ end
 
 CONFIG = Puller::Config.new
 
-SHARED_PATH     = SINATRA_ROOT/CONFIG.shared_dir
-DOWNLOADS_PATH  = SINATRA_ROOT/CONFIG.downloads_dir
-
 before do
   @puller = Puller::Core.new
 end
 
 get '/files/*' do
-  send_file SHARED_PATH/params["splat"]
+  send_file SINATRA_ROOT/CONFIG.shared_dir/params["splat"]
   # ^ don't... just don't
 end
 
@@ -207,15 +204,17 @@ __END__
       = yield 
 
 @@ home
-%h3 My files
-%table{ :id => 'my_files' }
-  %thead
-    %tr
-      %th.name File name
-      %th.size Size
-  %tbody
-    - @files.each do |file|
+#my_files
+  %h1= CONFIG.name
+  %p= CONFIG.comment
+  %table
+    %thead
       %tr
-        %td.name
-          %a{ :href => "/files/#{file}" }= file
-        %td.size= "%0.2f" % File.size(SHARED_PATH/file).to_megabytes + "M"
+        %th.name File name
+        %th.size Size
+    %tbody
+      - @files.each do |file|
+        %tr
+          %td.name
+            %a{ :href => "/files/#{file}" }= file
+          %td.size= "%0.2f" % File.size(SINATRA_ROOT/CONFIG.shared_dir/file).to_megabytes + "M"
