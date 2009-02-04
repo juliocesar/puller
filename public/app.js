@@ -3,15 +3,19 @@ $(document).ready(function() {
     
     $(hosts).each(function(i, host) {
       var table = $([
-        '<table id="host-' + host.name + '" style="display: none">',
-          '<thead>',
-            '<tr>',
-              '<th class="name">File name</th>',
-              '<th class="size">Size</th>',
-            '</tr>',
-          '</thead>',
-          '<tbody />',
-        '</table>'
+        '<div id="host-', host.name, '" style="display: none">',
+          '<h1>', host.name, '</h1>',
+          '<p>', host.comment, '</p>',
+          '<table id="host-', host.name, '">',
+            '<thead>',
+              '<tr>',
+                '<th class="name">File name</th>',
+                '<th class="size">Size</th>',
+              '</tr>',
+            '</thead>',
+            '<tbody />',
+          '</table>',
+        '</div>'
       ].join('')).appendTo('#wrap');
       window.files = host.files;
       $(host.files).each(function(i, file) {
