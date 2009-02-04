@@ -47,12 +47,14 @@ module Puller
   end
   
   class Response
-    def self.new(host, port, comment, files, format)
+    # def self.new(host, port, comment, files, format)
+    def self.new(options = {}, format = :json)
       struct = { 
-        :host     => Socket.gethostname, 
-        :port     => port,
-        :comment  => comment,
-        :files    => files 
+        :hostname => options[:hostname], 
+        :port     => options[:port],
+        :name     => options[:name],
+        :comment  => options[:comment],
+        :files    => options[:files].map { |f| { :name => f, :size => "%0.2f" % File.size(SHARE_PATH/f).to_megabytes + "M" } }
       }
       struct.send("to_#{format}")
     end
@@ -86,6 +88,7 @@ module Puller
         '_http._tcp', 
         'local', 4567, 
         'files' => '/files', 
+        'name' => 'Nikola Tesla',
         'comment' => 'omg awesome'
       )
     end
@@ -135,7 +138,13 @@ end
 
 get '/files' do
   content_type :json
-  Puller::Response.new(Socket.gethostname, 4567, 'omg awesome', @puller.my_files, :json)
+  Puller::Response.new(
+    :hostname => Socket.gethostname, 
+    :port     => 4567, 
+    :name     => 'myhost',
+    :comment  => 'omg awesome', 
+    :files    => @puller.my_files
+  )
 end
 
 post '/files' do
@@ -166,9 +175,6 @@ __END__
     %script{ :type => 'text/javascript', :src => '/jquery-1.3.1.min.js' }
     %script{ :type => 'text/javascript', :src => '/app.js' }
   %body
-    #header
-      %span.puller puller
-      %span.arrow <-
     #wrap
       = yield 
 
