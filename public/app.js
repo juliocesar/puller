@@ -1,7 +1,7 @@
-$(document).ready(function() {
-  $.getJSON('/hosts', function(hosts) {
-    
-    $(hosts).each(function(i, host) {
+(function($) {
+  $.puller = {
+    hosts: [],
+    showHost: function(host) {
       var table = $([
         '<div id="host-', host.name, '" style="display: none" class="host">',
           '<h1>', host.name, '</h1>',
@@ -17,7 +17,11 @@ $(document).ready(function() {
           '</table>',
         '</div>'
       ].join('')).appendTo('#wrap');
-      window.files = host.files;
+      $.puller.loadFilesFor(host);
+      table.show('slow');      
+    },
+    loadFilesFor: function(host) {
+      $('#host-' + host.name + ' tbody').empty();
       $(host.files).each(function(i, file) {
         $('#host-' + host.name + ' tbody').append([
           '<tr>',
@@ -30,9 +34,30 @@ $(document).ready(function() {
           '</tr>'
         ].join(''));
       });
-      table.show();
-      
-    });
-    
-  });
+    },
+    startPolling: function() {
+      this.poller = setInterval($.puller.getHosts, 3000)
+    },
+    hostIsLoaded: function(host) {
+      return ($('#host-' + host.name).length > 0)
+    },
+    getHosts: function() {
+      $.getJSON('/hosts', function(hosts) {
+        $(hosts).each(function(i, host) {
+          if (!$.puller.hostIsLoaded(host)) {            
+            $.puller.hosts.push(host);
+            $.puller.showHost(host);
+          } else {
+            $.puller.loadFilesFor(host);
+          }
+        });
+      })
+      // clearTimeout($.puller.poller);
+    }
+  }
+})(jQuery);
+
+$(document).ready(function() {
+  $.puller.getHosts();
+  $.puller.startPolling();
 });

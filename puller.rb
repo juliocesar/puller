@@ -202,6 +202,9 @@ __END__
     %script{ :type => 'text/javascript', :src => '/jquery-1.3.1.min.js' }
     %script{ :type => 'text/javascript', :src => '/app.js' }
   %body
+    #header
+      %span.puller puller
+      %span.arrow <-
     #wrap
       = yield 
 
