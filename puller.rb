@@ -9,7 +9,6 @@ require 'net/http'
 require 'net/dns/mdns-sd'
 require 'net/dns/resolv-mdns'
 require 'net/dns/resolv-replace'
-require 'terminator'
 
 # Mixins
 class Fixnum
@@ -111,7 +110,7 @@ module Puller
   class PeerDiscovery
     DNSSD = Net::DNS::MDNSSD    
     
-    def initialize(timesout_in = 5)
+    def initialize(timesout_in = 3)
       @timesout_in = timesout_in
       @handle = DNSSD.register(
         'puller', 
@@ -138,15 +137,14 @@ module Puller
     private
     def discover
       hosts = []
-      Terminator.terminate(@timesout_in) do
-        DNSSD.browse('_http._tcp') do |b|
-          next unless b.name == 'puller' 
-          DNSSD.resolve(b.name, b.type) do |reply|
-            # next if reply.target == Socket.gethostname # exclude myself from peers list
-            hosts << reply
-          end
+      DNSSD.browse('_http._tcp') do |b|
+        next unless b.name == 'puller' 
+        DNSSD.resolve(b.name, b.type) do |reply|
+          # next if reply.target == Socket.gethostname # exclude myself from peers list
+          hosts << reply
         end
       end
+      sleep @timesout_in
       return hosts      
     end
   end

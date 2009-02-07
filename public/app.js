@@ -36,7 +36,7 @@
       });
     },
     startPolling: function() {
-      this.poller = setInterval($.puller.getHosts, 3000)
+      this.poller = setInterval($.puller.getHosts, 5000)
     },
     hostIsLoaded: function(host) {
       return ($('#host-' + host.name).length > 0)
